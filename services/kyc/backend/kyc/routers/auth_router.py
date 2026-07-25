@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, BackgroundTasks
+from fastapi import APIRouter, Depends, Request, status, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from kyc.core.database import get_db
@@ -17,8 +17,8 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
     status_code=status.HTTP_201_CREATED
 )
 @limiter.limit("10/minute")
-def register_user(request: UserRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    new_user = AuthService.create_user(db=db, request=request)
+def register_user(request: Request, payload: UserRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    new_user = AuthService.create_user(db=db, request=payload)
     token = create_email_verification_token(new_user.email) #type: ignore
     background_tasks.add_task(send_verification_email, new_user.email, token) #type: ignore
     return new_user

@@ -2,7 +2,7 @@ services:
   kyc-backend:
     build:
       context: .
-      dockerfile: ./kyc/Dockerfile
+      dockerfile: ./services/kyc/Dockerfile
     container_name: kyc-service
     ports:
       - "8020:8020"
